@@ -1,0 +1,11 @@
+@import 'variable.styl'
+
+body,html
+  // 子元素自己字体的大小去乘以1来计算行高
+  line-height: 1
+  font-family: 'PingFang SC', 'STHeitiSC-Light', 'Helvetica-Light', arial, sans-serif, 'Droid Sans Fallback'
+  user-select: none
+  // 点击一个链接或者通过Javascript定义的可点击元素的时候，它就会出现一个半透明的灰色背景，设置为tansparent即禁用此属性。
+  -webkit-tap-highlight-color: transparent 
+  background: $color-background
+  color: $color-text

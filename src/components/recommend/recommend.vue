@@ -1,0 +1,138 @@
+<template>
+  <div class="recommend">
+    <scroll class="recommend-wrapper" :data="recommends" ref="scroll">
+      <div class="slider-wrapper" v-if="recommends.length">
+        <slider>
+          <div v-for="item in recommends">
+            <a :href="item.linkUrl">
+              <img :src="item.picUrl" @load="loadImg">
+            </a>
+          </div>
+        </slider>
+      </div>
+      <div class="songlist-wapper">
+        <h1>热门歌单推荐</h1>
+        <ul>
+          <li v-for="item in songList" class="songlist">
+            <div class="icon">
+              <img v-lazy="item.imgurl">
+            </div>
+            <div class="text">
+              <h2 class="creator">{{item.creator.name}}<span class="icon-headphones">{{ item.listennum | listennumFormate}}</span></h2>
+              <p class="name">{{item.dissname}}</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </scroll>
+    <div class="loading-wrapper" v-show="!songList.length">
+      <loading></loading>
+    </div>
+  </div>
+</template>
+<script type="text/ecmascript-6">
+import { getRecommend, getSongList } from 'api/recommend'
+import { ERR_OK } from 'api/config'
+import Slider from 'base/slider/slider'
+import Scroll from 'base/scroll/scroll'
+import Loading from 'base/loading/loading'
+export default {
+  data() {
+    return {
+      recommends: [],
+      songList: []
+    }
+  },
+  created() {
+    this._getRecommend()
+    this._getSongList()
+  },
+  filters: {
+    listennumFormate: function(value) {
+      value = value.toString()
+      return value.slice(0, -4) + '万'
+    }
+  },
+  methods: {
+    _getRecommend() {
+      // 这里的getRecommend是一个Promise对象
+      getRecommend().then(res => {
+        if (res.code === ERR_OK) {
+          this.recommends = res.data.slider
+        }
+      })
+    },
+    _getSongList() {
+      getSongList().then(res => {
+        if (res.code === ERR_OK) {
+          this.songList = res.data.list
+        }
+      })
+    },
+    // 确保即便slider后加载出来，重新计算bs高度，确保滑动不会出现问题。
+    loadImg() {
+      if (!this.ifLoaded) {
+        this.$refs.scroll.refresh()
+        this.ifLoaded = true
+      }
+    }
+  },
+  components: {
+    Slider,
+    Scroll,
+    Loading
+  }
+}
+</script>
+<style lang="stylus" rel="stylesheet/stylus">
+@import '~common/stylus/variable'
+  .recommend
+    position: fixed
+    width: 100%
+    top: 1.72rem
+    bottom: 0
+    .recommend-wrapper
+      height: 100%
+      overflow: hidden
+      .songlist-wapper
+        position: relative
+        h1
+          height: 1.3rem
+          line-height: 1.3rem
+          text-align: center
+          font-size: $font-size-medium
+          color: $color-theme
+        .songlist
+          display: flex
+          padding: 0 0.4rem
+          margin-bottom: 0.4rem
+          .icon
+            width: 1.2rem
+            height: 1.2rem
+            img
+              width: 100%
+              height: 100%
+          .text
+            display: flex
+            flex-direction: column
+            justify-content: center
+            flex: 1
+            padding-left: 0.4rem
+            .creator
+              font-size: 0.3rem
+              margin-bottom: 0.2rem
+              span
+                float: right
+                font-size: 0.26rem
+                color: $color-text-d
+                &:before
+                  margin-right: 0.1rem
+            .name
+              font-size: 0.3rem
+              color: $color-text-d
+    .loading-wrapper
+      position: absolute
+      top: 50%
+      left: 50%
+      transform: translate(-50%, -50%)
+</style>
