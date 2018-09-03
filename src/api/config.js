@@ -1,9 +1,9 @@
 export const queryParams = {
   g_tk: 5381,
-  format: 'jsonp',
   inCharset: 'utf-8',
   outCharset: 'utf-8',
-  notice: 0
+  notice: 0,
+  format: 'jsonp'
 }
 export const options = {
   // qq音乐约定的jsonp的参数二opts的param为jsonpCallback，因此必须为这个，否则拿不到数据。

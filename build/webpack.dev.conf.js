@@ -52,7 +52,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     },
     before(app) {
       // 定义了一个路由，/getSongList，作用是从真实的qq地址通过axios发送请求，修改referer，欺骗qq服务端。
-      app.get('/api/getSongList', (req, res) => {
+      app.get('/api/getSongList', (req, res) => { // eslint-disable-line
         var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
         axios.get(url, {
           headers: {

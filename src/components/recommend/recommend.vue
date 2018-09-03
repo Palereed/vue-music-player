@@ -1,28 +1,30 @@
 <template>
   <div class="recommend">
     <scroll class="recommend-wrapper" :data="recommends" ref="scroll">
-      <div class="slider-wrapper" v-if="recommends.length">
-        <slider>
-          <div v-for="item in recommends">
-            <a :href="item.linkUrl">
-              <img :src="item.picUrl" @load="loadImg">
-            </a>
-          </div>
-        </slider>
-      </div>
-      <div class="songlist-wapper">
-        <h1>热门歌单推荐</h1>
-        <ul>
-          <li v-for="item in songList" class="songlist">
-            <div class="icon">
-              <img v-lazy="item.imgurl">
+      <div>
+        <div class="slider-wrapper" v-if="recommends.length">
+          <slider>
+            <div v-for="item in recommends">
+              <a :href="item.linkUrl">
+                <img :src="item.picUrl" @load="loadImg">
+              </a>
             </div>
-            <div class="text">
-              <h2 class="creator">{{item.creator.name}}<span class="icon-headphones">{{ item.listennum | listennumFormate}}</span></h2>
-              <p class="name">{{item.dissname}}</p>
-            </div>
-          </li>
-        </ul>
+          </slider>
+        </div>
+        <div class="songlist-wapper">
+          <h1>热门歌单推荐</h1>
+          <ul>
+            <li v-for="item in songList" class="songlist">
+              <div class="icon">
+                <img v-lazy="item.imgurl">
+              </div>
+              <div class="text">
+                <h2 class="creator">{{item.creator.name}}<span class="icon-headphones">{{ item.listennum | listennumFormate}}</span></h2>
+                <p class="name">{{item.dissname}}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
     </scroll>
     <div class="loading-wrapper" v-show="!songList.length">
