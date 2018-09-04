@@ -5,7 +5,7 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
-export default{}
+export default {}
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
   // 要加上~，~common表示相对common，否则会报错

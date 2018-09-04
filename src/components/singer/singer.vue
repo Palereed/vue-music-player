@@ -1,19 +1,21 @@
 <template>
   <div class="singer">
-    <listview :data="this.singers"></listview>
+    <listview :data="this.singers" @select="selectTo"></listview>
+    <router-view></router-view>
   </div>
 </template>
 <script type="text/ecmascript-6">
-import {getSingerList} from 'api/singer.js'
-import {ERR_OK} from 'api/config'
+import { getSingerList } from 'api/singer.js'
+import { ERR_OK } from 'api/config'
 import Singer from 'common/js/singer'
 import Listview from 'base/listview/listview'
+import {mapMutations} from 'vuex'
 const HOT_NAME = '热门'
 const OTHER_NAME = '其他'
 const HOT_LENGTH = 10
-export default{
+export default {
   data() {
-    return{
+    return {
       singers: []
     }
   },
@@ -21,8 +23,15 @@ export default{
     this._getSingerList()
   },
   methods: {
+    // 子组件传递过来的item就是每个歌手对象。
+    selectTo(singer) {
+      this.$router.push({
+        path:`/singer/${singer.id}`
+      })
+      this.setSinger(singer)
+    },
     _getSingerList() {
-      getSingerList().then((res) => {
+      getSingerList().then(res => {
         if (res.code === ERR_OK) {
           this.singers = this._normalizeSinger(res.data.list)
         }
@@ -38,23 +47,27 @@ export default{
         }
       }
       list.forEach((item, index) => {
-        if ( index < HOT_LENGTH){
-          map.hot.items.push(new Singer({
-            id: item.Fsinger_mid,
-            name: item.Fsinger_name
-          }))
+        if (index < HOT_LENGTH) {
+          map.hot.items.push(
+            new Singer({
+              id: item.Fsinger_mid,
+              name: item.Fsinger_name
+            })
+          )
         }
         const key = item.Findex
-        if (!map[key]){
+        if (!map[key]) {
           map[key] = {
             title: key,
             items: []
           }
         }
-        map[key].items.push(new Singer({
-          id: item.Fsinger_mid,
-          name: item.Fsinger_name
-        }))
+        map[key].items.push(
+          new Singer({
+            id: item.Fsinger_mid,
+            name: item.Fsinger_name
+          })
+        )
       })
       // 得到有序列表，对map进行处理
       let hot = []
@@ -64,7 +77,7 @@ export default{
         let val = map[key]
         if (val.title.match(/[a-zA-Z]/)) {
           ret.push(val)
-        } else if (val.title === HOT_NAME){
+        } else if (val.title === HOT_NAME) {
           hot.push(val)
         } else {
           val.title = OTHER_NAME
@@ -75,7 +88,10 @@ export default{
         return a.title.charCodeAt(0) - b.title.charCodeAt(0)
       })
       return hot.concat(ret).concat(other)
-    }
+    },
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    })
   },
   components: {
     Listview

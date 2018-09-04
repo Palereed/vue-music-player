@@ -18,6 +18,10 @@ export default {
     data: {
       type: Array,
       default: null
+    },
+    isListen: {
+      type: Boolean,
+      default: false
     }
   },
   mounted() {
@@ -31,6 +35,14 @@ export default {
         probeType: this.probeType,
         click: this.click
       })
+      if (this.isListen) {
+        // self即为vue对象
+        let self = this
+        this.scroll.on('scroll', pos => {
+          // 调用vue的$emit
+          self.$emit('scroll', pos)
+        })
+      }
     },
     enable() {
       this.scroll && this.scroll.enable()
@@ -50,9 +62,9 @@ export default {
   },
   watch: {
     data() {
-      this.$nextTick(() => {
+      setTimeout(() => {
         this.refresh()
-      })
+      }, 20)
     }
   }
 }

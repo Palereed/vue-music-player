@@ -46,7 +46,7 @@ export default {
   mounted() {
     // 一直加不上类名，因为slider内slot填充的是数据，其父组件recommend的数据是异步获取到的，而在数据还未拿到mounted已经执行了，因此没有效果。
     // 因此在recommend中给slider的包裹层slider-wrapper添加v-if判断，在获取到数据后再渲染，这样保证mounted的执行性。
-    this.$nextTick(() => {
+    setTimeout(() => {
       this._setSliderWidth()
       this._initdots()
       this._initSlider()
@@ -55,6 +55,7 @@ export default {
         this._play()
       }
     })
+
     window.addEventListener('resize', () => {
       if (!this.slider) {
         return
