@@ -1,18 +1,59 @@
 <template>
   <transition name="slide">
-    <div class="singer-detail"></div>
+    <musiclist :songs="songs" :title="title" :avatar="avatar"></musiclist>
   </transition>
 </template>
 <script type="text/ecmascript-6">
-import {mapGetters} from 'vuex'
+import Musiclist from 'components/music-list/music-list'
+import { mapGetters } from 'vuex'
+import { getSingerDetail } from 'api/singer.js'
+import { ERR_OK } from 'api/config.js'
+import { creatSong } from 'common/js/song'
+import { getSongvkey } from 'api/singer.js'
 export default {
+  data() {
+    return {
+      songs: []
+    }
+  },
   computed: {
-    ...mapGetters([
-      'singer'
-    ])
+    title() {
+      return this.singer.name
+    },
+    avatar() {
+      return this.singer.avatar
+    },
+    ...mapGetters(['singer'])
   },
   created() {
-    console.log(this.singer)
+    this._getSingerDetail()
+  },
+  methods: {
+    _getSingerDetail() {
+      // 因为详情页是通过点击歌手进来的，即歌手列表页用vuex来setSinger的，若在详情页刷新，会没有数据，我们在刷新时返回歌手列表页。
+      if (!this.singer.id) {
+        this.$router.push('/singer')
+        return
+      }
+      getSingerDetail(this.singer.id).then(res => {
+        if (res.code === ERR_OK) {
+          this.songs = this._normalizeSongs(res.data.list)
+        }
+      })
+    },
+    _normalizeSongs(list) {
+      let ret = []
+      list.forEach(item => {
+        let { musicData } = item
+        if (musicData.songid && musicData.albummid) {
+          ret.push(creatSong(musicData))
+        }
+      })
+      return ret
+    }
+  },
+  components:{
+    Musiclist
   }
 }
 </script>

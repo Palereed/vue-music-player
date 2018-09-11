@@ -16,3 +16,36 @@ export function getSingerList() {
   })
   return jsonp(url, data, options)
 }
+
+export function getSingerDetail(id) {
+  let url = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg'
+  let data = Object.assign({}, queryParams, {
+    singerid: id,
+    platform: 'h5page',
+    needNewCode: 1,
+    order: 'listen',
+    from: 'h5',
+    num: 100,
+    begin: 0
+  })
+  return jsonp(url, data, options)
+}
+// 歌曲播放链接需要vkey值，这里拿到vkey值。这里的id是songmid
+export function getSongvkey(mid) {
+  let url = 'https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg'
+  let data = Object.assign({}, queryParams, {
+    songmid: mid,
+    format: 'json',
+    platform: 'yqq',
+    filename: `C400${mid}.m4a`,
+    needNewCode: 0,
+    cid: 205361747,
+    uin: 0,
+    guid: 2760283000,
+    callback: 'vkey'
+  })
+  let optioned = Object.assign({}, options, {
+    name: 'vkey'
+  })
+  return jsonp(url, data, optioned)
+}
