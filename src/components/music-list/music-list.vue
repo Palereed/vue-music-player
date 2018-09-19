@@ -16,7 +16,7 @@
     </div>
     <div class="avatar-layer" ref="layer"></div>
     <scroll :data="songs" :probe-type="probeType" :is-listen="isListen" @scroll="scroll" class="songlist-wrapper" ref="songlistwrapper">
-      <songlist :songs="songs"></songlist>
+      <songlist :songs="songs" @select="selectItem"></songlist>
     </scroll>
     <div v-show="!songs.length" class="loading-wrapper">
       <loading></loading>
@@ -28,6 +28,7 @@ import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
 import Songlist from 'base/song-list/song-list'
 import { prefixStyle } from 'common/js/dom'
+import { mapActions } from 'vuex'
 const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
 export default {
@@ -72,7 +73,16 @@ export default {
     },
     scroll(pos) {
       this.scrollY = pos.y
-    }
+    },
+    selectItem(item, index) {
+      this.selectPlay({
+        list: this.songs,
+        index
+      })
+    },
+    ...mapActions([
+      'selectPlay'
+    ]) 
   },
   watch: {
     scrollY(newY) {
@@ -141,6 +151,7 @@ export default {
       text-align: center
       z-index: 40
       line-height: 0.84rem
+      color: $color-theme
     .singer-avatar
       position: relative
       width: 100%

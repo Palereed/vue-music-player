@@ -1,0 +1,228 @@
+<template>
+  <div class="player" v-show="playList.length>0">
+    <div class="normal-player" v-show="fullScreen">
+      <div class="background">
+        <img width="100%" height="100%" :src="currentSong.image">
+      </div>
+      <div class="top-wrap">
+        <div class="back" @click="mini">
+          <i class="icon-back"></i>
+        </div>
+        <h1 class="song-name">{{currentSong.name}}</h1>
+        <h2 class="singer-name">{{currentSong.singer}}</h2>
+      </div>
+      <div class="middle-wrap">
+        <div class="middle-l">
+          <div class="cd-wrap">
+            <div class="cd">
+              <img class="image" :src="currentSong.image">
+            </div>
+          </div>
+        </div> 
+      </div>
+      <div class="bottom-wrap">
+        <div class="operators">
+          <div class="icon i-left">
+            <i class="icon-sequence"></i>
+          </div>
+          <div class="icon i-left">
+            <i class="icon-prev"></i>
+          </div>
+          <div class="icon i-center">
+            <i class="icon-play"></i>
+          </div>
+          <div class="icon i-right">
+            <i class="icon-next"></i>
+          </div>
+          <div class="icon i-right">
+            <i class="icon-not-like"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mini-player" v-show="!fullScreen" @click="full">
+      <div class="icon">
+        <img :src="currentSong.image">
+      </div>
+      <div class="text">
+        <h2 class="song-name">{{currentSong.name}}</h2>
+        <p class="singer-name">{{currentSong.singer}}</p>
+      </div>
+      <div class="control">
+        <i class="icon-playlist"></i>
+      </div>
+    </div>
+  </div>
+</template>
+<script type="text/ecmascript-6">
+import { mapGetters, mapMutations } from 'vuex'
+export default {
+  computed: {
+    ...mapGetters(['fullScreen', 'playList', 'currentSong'])
+  },
+  methods: {
+    mini() {
+      this.setFullScreen(false)
+    },
+    full() {
+      this.setFullScreen(true)
+    },
+    ...mapMutations({
+      setFullScreen: 'SET_FULL_SCREEN'
+    })
+  }
+}
+</script>
+<style lang="stylus" rel="stylesheet/stylus">
+  @import "~common/stylus/variable"
+  @import "~common/stylus/mixin"
+  .player
+    .normal-player
+      position: fixed
+      width: 100%
+      height: 100%
+      top: 0
+      left: 0
+      z-index: 150
+      background: $color-background
+      .background
+        position: absolute
+        left: 0
+        top: 0
+        width: 100%
+        height: 100%
+        z-index: -1
+        opacity: 0.6
+        filter: blur(20px)
+      .top-wrap
+        position: relative
+        margin-bottom: 0.25rem
+        .back
+          position absolute
+          top: 0
+          left: 0.06rem
+          z-index: 50
+          .icon-back
+            display: block
+            padding: 0.18rem
+            font-size: $font-size-large-x
+            color: $color-theme
+            transform: rotate(-90deg)
+        .song-name
+          width: 70%
+          margin: 0 auto
+          line-height: 0.8rem
+          text-align: center
+          no-wrap()
+          font-size: $font-size-large
+          color: $color-text
+        .singer-name
+          line-height: 0.4rem
+          text-align: center
+          font-size: $font-size-medium
+          color: $color-text
+      .middle-wrap
+        position: fixed
+        width: 100%
+        top: 1.6rem
+        bottom: 3.4rem
+        white-space: nowrap
+        font-size: 0
+        .middle-l
+          display: inline-block
+          vertical-align: top
+          position: relative
+          width: 100%
+          height: 0
+          padding-top: 80%
+          .cd-wrap
+            position: absolute
+            left: 10%
+            top: 0
+            width: 80%
+            height: 100%
+            .cd
+              width: 100%
+              height: 100%
+              box-sizing: border-box
+              border: 0.2rem solid rgba(255, 255, 255, 0.1)
+              border-radius: 50%
+              .image
+                width: 100%
+                height: 100%
+                border-radius: 50%
+      .bottom-wrap
+        position: absolute
+        bottom: 1rem
+        width: 100%     
+        .operators
+          display: flex
+          align-items: center
+          .icon
+            flex: 1
+            color: $color-theme
+            &.disable
+              color: $color-theme-d
+            i
+              font-size: 0.6rem
+          .i-left
+            text-align: right
+          .i-center
+            padding: 0 0.4rem
+            text-align: center
+            i
+              font-size: 0.8rem
+          .i-right
+            text-align: left
+          .icon-like
+            color: $color-sub-theme
+    .mini-player
+      display: flex
+      align-items: center
+      position: fixed
+      left: 0
+      bottom: 0
+      z-index: 180
+      width: 100%
+      height: 1.2rem
+      background: $color-highlight-background
+      .icon
+        flex: 0 0 0.8rem
+        width: 0.8rem
+        height 0.8rem
+        padding: 0 0.2rem 0 0.4rem
+        img
+          display: block
+          width: 100%
+          height: 100%
+          border-radius: 50%
+      .text
+        display: flex
+        flex-direction: column
+        justify-content: center
+        flex: 1
+        line-height: 0.4rem
+        overflow: hidden
+        .song-name
+          no-wrap()
+          font-size: $font-size-medium
+          color: $color-text
+        .singer-name
+          no-wrap()
+          font-size: $font-size-small
+          color: $color-text-d
+      .control
+        flex: 0 0 0.6rem
+        width: 0.6rem
+        height: 0.6rem
+        padding: 0 0.2rem
+        .icon-play-mini, .icon-pause-mini, .icon-playlist
+          display: block
+          font-size: 0.6rem
+          color: $color-theme-d
+        .icon-mini
+          font-size: 32px
+          position: absolute
+          left: 0
+          top: 0    
+</style>
