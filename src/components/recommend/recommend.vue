@@ -12,15 +12,15 @@
           </slider>
         </div>
         <div class="songlist-wapper">
-          <h1>热门歌单推荐</h1>
+          <h1>推荐歌单</h1>
           <ul>
             <li v-for="item in songList" class="songlist">
               <div class="icon">
-                <img v-lazy="item.imgurl">
+                <img v-lazy="item.picUrl">
               </div>
               <div class="text">
-                <h2 class="creator">{{item.creator.name}}<span class="icon-headphones">{{ item.listennum | listennumFormate}}</span></h2>
-                <p class="name">{{item.dissname}}</p>
+                <h2 class="creator"><span class="icon-headphones">{{ item.playCount | listennumFormate }}</span></h2>
+                <p class="name">{{item.name}}</p>
               </div>
             </li>
           </ul>
@@ -51,7 +51,7 @@ export default {
   },
   filters: {
     listennumFormate: function(value) {
-      value = value.toString()
+      value = (value | 0).toString()
       return value.slice(0, -4) + '万'
     }
   },
@@ -59,7 +59,7 @@ export default {
     _getRecommend() {
       // 这里的getRecommend是一个Promise对象
       getRecommend().then(res => {
-        if (res.code === ERR_OK) {
+        if (res.code === 0) {
           this.recommends = res.data.slider
         }
       })
@@ -67,7 +67,7 @@ export default {
     _getSongList() {
       getSongList().then(res => {
         if (res.code === ERR_OK) {
-          this.songList = res.data.list
+          this.songList = res.result
         }
       })
     },

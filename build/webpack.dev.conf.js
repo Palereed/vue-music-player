@@ -13,13 +13,6 @@ const portfinder = require('portfinder')
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
-// 后端代理，利用axios发送http请求，
-const express = require('express')
-const axios = require('axios')
-const app = express()
-const apiRoutes = express.Router()
-app.use('/api', apiRoutes)
-
 const devWebpackConfig = merge(baseWebpackConfig, {
   module: {
     rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true })
@@ -49,24 +42,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     quiet: true, // necessary for FriendlyErrorsPlugin
     watchOptions: {
       poll: config.dev.poll
-    },
-    before(app) {
-      // 定义了一个路由，/getSongList，作用是从真实的qq地址通过axios发送请求，修改referer，欺骗qq服务端。
-      app.get('/api/getSongList', (req, res) => { // eslint-disable-line
-        var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
-        axios.get(url, {
-          headers: {
-            referer: 'https://c.y.qq.com/',
-            host: 'c.y.qq.com'
-          },
-          params: req.query
-        }).then((response) => {
-          // axios数据是response.data，这是qq返回给我们的数据，我们要将数据吐给浏览器，res.json
-          res.json(response.data)
-        }).catch((e) => {
-          console.log(e)
-        })
-      })
     }
   },
   plugins: [

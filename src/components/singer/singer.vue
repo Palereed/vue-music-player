@@ -10,6 +10,7 @@ import { ERR_OK } from 'api/config'
 import Singer from 'common/js/singer'
 import Listview from 'base/listview/listview'
 import {mapMutations} from 'vuex'
+import pinyin from 'js-pinyin'
 const HOT_NAME = '热门'
 const OTHER_NAME = '其他'
 const HOT_LENGTH = 10
@@ -33,9 +34,13 @@ export default {
     _getSingerList() {
       getSingerList().then(res => {
         if (res.code === ERR_OK) {
-          this.singers = this._normalizeSinger(res.data.list)
+          this.singers = this._normalizeSinger(res.artists)
         }
       })
+    },
+    // 获取歌手首字母
+    _getFirstLetter(val) {
+      return pinyin.getFullChars(val).substr(0,1)
     },
     // 将数据格式化为我们想要的。
     _normalizeSinger(list) {
@@ -50,13 +55,13 @@ export default {
         if (index < HOT_LENGTH) {
           map.hot.items.push(
             new Singer({
-              id: item.Fsinger_id,
-              mid: item.Fsinger_mid,
-              name: item.Fsinger_name
+              id: item.id,
+              name: item.name,
+              avatar: item.picUrl
             })
           )
         }
-        const key = item.Findex
+        const key = this._getFirstLetter(item.name)
         if (!map[key]) {
           map[key] = {
             title: key,
@@ -65,13 +70,13 @@ export default {
         }
         map[key].items.push(
           new Singer({
-            id: item.Fsinger_id,
-            mid: item.Fsinger_mid,
-            name: item.Fsinger_name
+            id: item.id,
+            name: item.name,
+            avatar: item.picUrl
           })
         )
       })
-      // 得到有序列表，对map进行处理
+      //得到有序列表，对map进行处理
       let hot = []
       let ret = []
       let other = []
