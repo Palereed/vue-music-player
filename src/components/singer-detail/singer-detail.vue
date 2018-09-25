@@ -7,8 +7,9 @@
 import Musiclist from 'components/music-list/music-list'
 import { mapGetters } from 'vuex'
 import { getSingerDetail } from 'api/singer.js'
-import { ERR_OK } from 'api/config.js'
 import { creatSong } from 'common/js/song'
+import { ERR_OK } from 'api/config.js'
+import { getSongUrl } from 'api/singer'
 export default {
   data() {
     return {
@@ -44,7 +45,15 @@ export default {
       let ret = []
       list.forEach(item => {
         if (item.id && item.al.id) {
-          ret.push(creatSong(item))
+          getSongUrl(item.id).then(res => {
+            if (res.code === ERR_OK) {
+              // 没有url的歌剔除出去
+              if (res.data[0].url) {
+                item.url = res.data[0].url
+                ret.push(creatSong(item))
+              }
+            }
+          })
         }
       })
       return ret

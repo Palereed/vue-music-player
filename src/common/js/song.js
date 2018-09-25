@@ -1,12 +1,13 @@
 // 类的拓展性比对象强很多
 export default class Song {
-  constructor({id, alid, singer, name, album, image}) {
+  constructor({id, alid, singer, name, album, image, url}) {
     this.id = id
     this.alid = alid
     this.singer = singer
     this.name = name
     this.album = album
     this.image = image
+    this.url = url
   }
 }
 // 抽象出来工厂方法，更抽象一层，代码更少。防止在创建Song的时候重复出来一大堆代码。
@@ -18,7 +19,8 @@ export function creatSong(musicData) {
     singer: filterSinger(musicData.ar),
     name: musicData.name,
     album: musicData.al.name,
-    image: musicData.al.picUrl
+    image: musicData.al.picUrl,
+    url: musicData.url
   })
 }
 // 歌是多人唱的，需要对这多个名字用/分开

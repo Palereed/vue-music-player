@@ -10,6 +10,7 @@ export const options = {
   param: 'jsonpCallback'
 }
 
-// 正确值一般设置为0，为了语义化设置好常量
+// 网易云接口url
 export const URL = 'http://localhost:3000'
+// 正确值设置为200，为了语义化设置好常量
 export const ERR_OK = 200

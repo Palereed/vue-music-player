@@ -30,7 +30,7 @@
               <i class="icon-prev"></i>
             </div>
             <div class="icon i-center">
-              <i class="icon-play"></i>
+              <i class="icon-play" @click="togglePlaying"></i>
             </div>
             <div class="icon i-right">
               <i class="icon-next"></i>
@@ -56,6 +56,7 @@
         </div>
       </div>
     </transition>
+    <audio :src="currentSong.url" ref="audio"></audio>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -69,7 +70,7 @@ export default {
     this.$refs.miniPlayer.style.display = 'none'
   },
   computed: {
-    ...mapGetters(['fullScreen', 'playList', 'currentSong'])
+    ...mapGetters(['fullScreen', 'playList', 'currentSong', 'playing'])
   },
   methods: {
     mini() {
@@ -106,9 +107,11 @@ export default {
       this.$refs.cdWrap.style.animation = ''
     },
     leave(el, done) {
-      this.$refs.cdWrap.style.transition = "all 0.4s"
+      this.$refs.cdWrap.style.transition = 'all 0.4s'
       const { x, y, scale } = this._getPosandScale()
-      this.$refs.cdWrap.style[transform] = `translate3d(${x}px, ${y}px, 0) scale(${scale})`
+      this.$refs.cdWrap.style[
+        transform
+      ] = `translate3d(${x}px, ${y}px, 0) scale(${scale})`
       this.$refs.cdWrap.addEventListener('transitionend', done)
     },
     afterLeave() {
@@ -122,13 +125,24 @@ export default {
       const windoWidth = window.innerWidth
       const windowHeight = window.innerHeight
       const x = -(windoWidth / 2 - cdWrapRect.width * percent)
-      const y = windowHeight - cdWrapRect.top - cdWrapRect.height / 2 - cdWrapRect.width * percent * 1.5 / 2
+      const y =
+        windowHeight -
+        cdWrapRect.top -
+        cdWrapRect.height / 2 -
+        cdWrapRect.width * percent * 1.5 / 2
       const scale = percent
       return { x, y, scale }
     },
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN'
     })
+  },
+  watch: {
+    currentSong() {
+      this.$nextTick(() => {
+        this.$refs.audio.play()
+      })
+    }
   }
 }
 </script>
