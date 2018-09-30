@@ -1,11 +1,12 @@
 // 类的拓展性比对象强很多
 export default class Song {
-  constructor({id, alid, singer, name, album, image, url}) {
+  constructor({id, alid, singer, name, album, duration, image, url}) {
     this.id = id
     this.alid = alid
     this.singer = singer
     this.name = name
     this.album = album
+    this.duration = duration
     this.image = image
     this.url = url
   }
@@ -19,6 +20,7 @@ export function creatSong(musicData) {
     singer: filterSinger(musicData.ar),
     name: musicData.name,
     album: musicData.al.name,
+    duration: musicData.dt / 1000,
     image: musicData.al.picUrl,
     url: musicData.url
   })

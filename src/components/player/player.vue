@@ -15,25 +15,32 @@
         <div class="middle-wrap">
           <div class="middle-l">
             <div class="cd-wrap" ref="cdWrap">
-              <div class="cd">
+              <div class="cd" ref="cd" :class="cdCls">
                 <img class="image" :src="currentSong.image">
               </div>
             </div>
           </div> 
         </div>
         <div class="bottom-wrap">
+          <div class="progress-wrapper">
+            <span class="time time-l">{{format(currentTime)}}</span>
+            <div class="progress-bar-wrapper">
+              <progressbar :percent="percent"></progressbar>
+            </div>
+            <span class="time time-r">{{format(currentSong.duration)}}</span>
+          </div>
           <div class="operators">
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
-            <div class="icon i-left">
-              <i class="icon-prev"></i>
+            <div class="icon i-left" :class="disableCls">
+              <i class="icon-prev" @click="prevSong" ></i>
             </div>
-            <div class="icon i-center">
-              <i class="icon-play" @click="togglePlaying"></i>
+            <div class="icon i-center" :class="disableCls">
+              <i :class="playIcon" @click="togglePlaying"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon-next"></i>
+            <div class="icon i-right" :class="disableCls">
+              <i class="icon-next" @click="nextSong"></i>
             </div>
             <div class="icon i-right">
               <i class="icon-not-like"></i>
@@ -45,34 +52,113 @@
     <transition name="mini">
       <div class="mini-player" v-show="!fullScreen" @click="full" ref="miniPlayer">
         <div class="icon">
-          <img :src="currentSong.image">
+          <img :src="currentSong.image" :class="cdCls">
         </div>
         <div class="text">
           <h2 class="song-name">{{currentSong.name}}</h2>
           <p class="singer-name">{{currentSong.singer}}</p>
         </div>
         <div class="control">
+          <i class="icon-mini" :class="miniIcon" @click.stop.prevent="togglePlaying"></i>
+        </div>
+        <div class="control">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
-    <audio :src="currentSong.url" ref="audio"></audio>
+    <audio :src="currentSong.url" @canplay="ready" @error="error" ref="audio" @timeupdate="timeUpdate"></audio>
   </div>
 </template>
 <script type="text/ecmascript-6">
 import { mapGetters, mapMutations } from 'vuex'
 import animations from 'create-keyframe-animation'
 import { prefixStyle } from 'common/js/dom'
+import Progressbar from 'base/progress-bar/progress-bar'
 const transform = prefixStyle('transform')
 export default {
+  data() {
+    return {
+      songReady: false,
+      currentTime: 0,
+    }
+  },
   mounted() {
     // 第一次弹出full，避免mini显示又隐藏。
     this.$refs.miniPlayer.style.display = 'none'
   },
   computed: {
-    ...mapGetters(['fullScreen', 'playList', 'currentSong', 'playing'])
+    cdCls() {
+      return this.playing ? 'play' : 'play pause'
+    },
+    disableCls() {
+      return this.songReady ? '' : 'disable'
+    },
+    playIcon() {
+      return this.playing ? 'icon-pause' : 'icon-play'
+    },
+    miniIcon() {
+      return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+    },
+    percent() {
+      return this.currentTime / this.currentSong.duration
+    },
+    ...mapGetters([
+      'fullScreen',
+      'playList',
+      'currentSong',
+      'playing',
+      'currentIndex'
+    ])
   },
   methods: {
+    togglePlaying() {
+      this.setPlayState(!this.playing)
+    },
+    ready() {
+      this.songReady = true
+    },
+    // 网络问题或别的原因歌曲未加载出来，保证按钮是可以使用的。
+    error() {
+      this.songReady = true
+    },
+    timeUpdate(e) {
+      this.currentTime = e.target.currentTime
+    },
+    format(duration) {
+      duration = duration | 0
+      let minute = (duration / 60) | 0
+      let second = duration % 60
+      second < 10 ? (second = '0' + second) : second
+      return `${minute}:${second}`
+    },
+    prevSong() {
+      if (!this.songReady) {
+        return
+      }
+      let index = this.currentIndex - 1
+      if (index < 0) {
+        index = this.playList.length - 1
+      }
+      this.setCurrentIndex(index)
+      if (!this.playing) {
+        this.togglePlaying()
+      }
+      this.songReady = false
+    },
+    nextSong() {
+      if (!this.songReady) {
+        return
+      }
+      let index = this.currentIndex + 1
+      if (index === this.playList.length) {
+        index = 0
+      }
+      this.setCurrentIndex(index)
+      if (!this.playing) {
+        this.togglePlaying()
+      }
+      this.songReady = false
+    },
     mini() {
       this.setFullScreen(false)
     },
@@ -121,7 +207,7 @@ export default {
     _getPosandScale() {
       const cdWrapRect = this.$refs.cdWrap.getBoundingClientRect()
       // mini图片与full的比例，因为rem适配，并且获取不到mini的dom，因此按比例算。
-      const percent = 1 / 6 * 0.8
+      const percent = (1 / 6) * 0.8
       const windoWidth = window.innerWidth
       const windowHeight = window.innerHeight
       const x = -(windoWidth / 2 - cdWrapRect.width * percent)
@@ -129,12 +215,14 @@ export default {
         windowHeight -
         cdWrapRect.top -
         cdWrapRect.height / 2 -
-        cdWrapRect.width * percent * 1.5 / 2
+        (cdWrapRect.width * percent * 1.5) / 2
       const scale = percent
       return { x, y, scale }
     },
     ...mapMutations({
-      setFullScreen: 'SET_FULL_SCREEN'
+      setFullScreen: 'SET_FULL_SCREEN',
+      setPlayState: 'SET_PLAYING_STATE',
+      setCurrentIndex: 'SET_CURRENT_INDEX'
     })
   },
   watch: {
@@ -142,7 +230,16 @@ export default {
       this.$nextTick(() => {
         this.$refs.audio.play()
       })
+    },
+    playing(newPlaying) {
+      const audio = this.$refs.audio
+      this.$nextTick(() => {
+        newPlaying ? audio.play() : audio.pause()
+      })
     }
+  },
+  components: {
+    Progressbar
   }
 }
 </script>
@@ -220,6 +317,10 @@ export default {
               box-sizing: border-box
               border: 0.2rem solid rgba(255, 255, 255, 0.1)
               border-radius: 50%
+              &.play
+                animation: rotate 20s linear infinite
+              &.pause
+                animation-play-state: paused
               .image
                 width: 100%
                 height: 100%
@@ -227,7 +328,25 @@ export default {
       .bottom-wrap
         position: absolute
         bottom: 1rem
-        width: 100%     
+        width: 100%
+        .progress-wrapper
+          display: flex
+          align-items: center
+          width: 80%
+          margin: 0px auto
+          padding: 0.2rem 0
+          .time
+            color: $color-text
+            font-size: $font-size-small
+            flex: 0 0 0.6rem
+            line-height: 0.6rem
+            width: 0.6rem
+            &.time-l
+              text-align: left
+            &.time-r
+              text-align: right
+          .progress-bar-wrapper
+            flex: 1  
         .operators
           display: flex
           align-items: center
@@ -280,6 +399,10 @@ export default {
           width: 100%
           height: 100%
           border-radius: 50%
+          &.play
+            animation: rotate 10s linear infinite
+          &.pause
+            animation-play-state: paused
       .text
         display: flex
         flex-direction: column
@@ -300,17 +423,23 @@ export default {
         width: 0.6rem
         height: 0.6rem
         padding: 0 0.2rem
+        position: relative
         .icon-play-mini, .icon-pause-mini, .icon-playlist
           display: block
           font-size: 0.6rem
           color: $color-theme-d
         .icon-mini
-          font-size: 32px
+          font-size: 0.6rem
           position: absolute
-          left: 0
+          left: 0.2rem
           top: 0
       &.mini-enter-active,&.mini-leave-active
         transition: 0.4s
       &.mini-enter,&.mini-leave-to
         transform: translate3d(0, 1.2rem, 0)
+  @keyframes rotate
+    0%
+      transform: rotate(0)
+    100%
+      transform: rotate(360deg)  
 </style>
