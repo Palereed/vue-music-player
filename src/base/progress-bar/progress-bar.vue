@@ -1,9 +1,14 @@
 <template>
-  <div class="progress-bar" ref="progressBar">
+  <div class="progress-bar" ref="progressBar" @click.prevent='progressClick'>
     <div class="bar-inner">
       <div class="progress" ref="progress"></div>
       <div class="progress-btn-wrapper" ref="progressBtnWrapper">
-        <div class="progress-btn" ref="progressBtn"></div>
+        <div class="progress-btn" ref="progressBtn"
+             @touchstart.prevent='progressTouchStart'
+             @touchmove.prevent='progressTouchMove'
+             @touchend='progressTouchEnd'
+             >
+        </div>
       </div>
     </div>
   </div>
@@ -18,14 +23,55 @@ export default {
       default: 0
     }
   },
+  created() {
+    // touch事件中的共享数据，将数据挂载在此对象上即可。
+    this.touch = {}
+    this.barWidth = 0
+  },
+  methods:{
+    progressTouchStart(e) {
+      this.touch.initiated = true
+      // touches[0]即第一个手指的点击对象。
+      this.touch.startX = e.touches[0].pageX
+      this.touch.left = this.$refs.progress.clientWidth
+    },
+    progressTouchMove(e) {
+      if (!this.touch.initiated) {
+        return
+      }
+      const deltaX = e.touches[0].pageX - this.touch.startX
+      const offsetWidth = Math.min(this.barWidth, Math.max(0, this.touch.left + deltaX))
+      this._offset(offsetWidth)
+    },
+    progressTouchEnd() {
+      this.touch.initiated = false
+      this._triggerPercent()
+    },
+    _triggerPercent() {
+      const percent = this.$refs.progress.clientWidth / this.barWidth
+      this.$emit('percentChange', percent)
+    },
+    progressClick(e) {
+      if(e.offsetX < 0){
+        return
+      }
+      console.log(e.offsetX)
+      this._offset(e.offsetX)
+      this._triggerPercent()
+    },
+    _offset(offsetWidth) {
+      this.$refs.progress.style.width = `${offsetWidth}px`
+      this.$refs.progressBtnWrapper.style[transform] = `translate3d(${offsetWidth}px, 0, 0)`
+    }
+  },
   watch: {
     percent(now) {
-      if (now >= 0) {
+      if (now >= 0 && !this.touch.initiated) {
         const progressBtnWidth = this.$refs.progressBtn.offsetWidth
-        const barWidth = this.$refs.progressBar.clientWidth - progressBtnWidth
-        const offsetWidth = now * barWidth
-        this.$refs.progress.style.width = `${offsetWidth}px`
-        this.$refs.progressBtnWrapper.style[transform] = `translate3d(${offsetWidth}px, 0, 0)`
+        const progressBarWidth = this.$refs.progressBar.clientWidth
+        this.barWidth = progressBarWidth - progressBtnWidth
+        const offsetWidth = now * this.barWidth
+        this._offset(offsetWidth)
       }
     }
   }
