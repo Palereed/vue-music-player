@@ -11,6 +11,6 @@ export const options = {
 }
 
 // 网易云接口url
-export const URL = 'http://192.168.31.108:3000'
+export const URL = 'http://localhost:3000'
 // 正确值设置为200，为了语义化设置好常量
 export const ERR_OK = 200

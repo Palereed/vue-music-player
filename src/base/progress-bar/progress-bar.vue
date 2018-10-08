@@ -28,7 +28,7 @@ export default {
     this.touch = {}
     this.barWidth = 0
   },
-  methods:{
+  methods: {
     progressTouchStart(e) {
       this.touch.initiated = true
       // touches[0]即第一个手指的点击对象。
@@ -40,7 +40,10 @@ export default {
         return
       }
       const deltaX = e.touches[0].pageX - this.touch.startX
-      const offsetWidth = Math.min(this.barWidth, Math.max(0, this.touch.left + deltaX))
+      const offsetWidth = Math.min(
+        this.barWidth,
+        Math.max(0, this.touch.left + deltaX)
+      )
       this._offset(offsetWidth)
     },
     progressTouchEnd() {
@@ -52,16 +55,23 @@ export default {
       this.$emit('percentChange', percent)
     },
     progressClick(e) {
-      if(e.offsetX < 0){
-        return
-      }
-      console.log(e.offsetX)
-      this._offset(e.offsetX)
+      const rect = this.$refs.progressBar.getBoundingClientRect()
+      const offsetWidth = e.pageX - rect.left
+      let moveTo = Math.max(
+        0,
+        Math.min(
+          offsetWidth - this.$refs.progressBtn.offsetWidth / 2,
+          this.barWidth
+        )
+      )
+      this._offset(moveTo)
       this._triggerPercent()
     },
     _offset(offsetWidth) {
       this.$refs.progress.style.width = `${offsetWidth}px`
-      this.$refs.progressBtnWrapper.style[transform] = `translate3d(${offsetWidth}px, 0, 0)`
+      this.$refs.progressBtnWrapper.style[
+        transform
+      ] = `translate3d(${offsetWidth}px, 0, 0)`
     }
   },
   watch: {

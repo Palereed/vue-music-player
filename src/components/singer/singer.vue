@@ -9,7 +9,7 @@ import { getSingerList } from 'api/singer.js'
 import { ERR_OK } from 'api/config'
 import Singer from 'common/js/singer'
 import Listview from 'base/listview/listview'
-import {mapMutations} from 'vuex'
+import { mapMutations } from 'vuex'
 import pinyin from 'js-pinyin'
 const HOT_NAME = '热门'
 const OTHER_NAME = '其他'
@@ -40,7 +40,7 @@ export default {
     },
     // 获取歌手首字母
     _getFirstLetter(val) {
-      return pinyin.getFullChars(val).substr(0,1)
+      return pinyin.getFullChars(val).substr(0, 1)
     },
     // 将数据格式化为我们想要的。
     _normalizeSinger(list) {
@@ -76,7 +76,7 @@ export default {
           })
         )
       })
-      //得到有序列表，对map进行处理
+      // 得到有序列表，对map进行处理
       let hot = []
       let ret = []
       let other = []

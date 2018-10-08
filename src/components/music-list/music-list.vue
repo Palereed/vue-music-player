@@ -7,7 +7,7 @@
     <div class="singer-avatar" :style="avatarStyle" ref="avatar">
       <!-- 模糊层 -->
       <div class="filter" ref="filter"></div>
-      <div class="play-wrapper" ref="playwrapper">
+      <div class="play-wrapper" ref="playwrapper" @click="random">
         <div class="play" v-show="songs.length > 0">
           <i class="icon-play"></i>
           <span class="text">随机播放全部音乐</span>
@@ -80,9 +80,15 @@ export default {
         index
       })
     },
+    random() {
+      this.randomPlay({
+        list: this.songs
+      })
+    },
     ...mapActions([
-      'selectPlay'
-    ]) 
+      'selectPlay',
+      'randomPlay'
+    ])
   },
   watch: {
     scrollY(newY) {
@@ -204,5 +210,5 @@ export default {
       position: absolute
       top: 50%
       left: 50%
-      transform: translate(-50%, -50%)  
+      transform: translate(-50%, -50%)
 </style>
