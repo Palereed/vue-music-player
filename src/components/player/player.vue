@@ -20,6 +20,15 @@
               </div>
             </div>
           </div>
+          <scroll class="middle-r" :data="currentLyric && currentLyric.lines" ref="lyricList">
+            <div class="lyric-wrap">
+              <div v-if="this.currentLyric" class="text">
+                <ul>
+                  <li v-for="(line, index) in this.currentLyric.lines" :class="{'current': currentLineNum === index}" ref="lyricLine">{{line.txt}}</li>
+                </ul>
+              </div>
+            </div>
+          </scroll>
         </div>
         <div class="bottom-wrap">
           <div class="progress-wrapper">
@@ -79,12 +88,17 @@ import Progressbar from 'base/progress-bar/progress-bar'
 import Progresscircle from 'base/progress-circle/progress-circle'
 import { playMode } from 'common/js/config'
 import { shuffle } from 'common/js/util'
+import { getSongLyric } from 'common/js/song'
+import Scroll from 'base/scroll/scroll'
+import Lyric from 'lyric-parser'
 const transform = prefixStyle('transform')
 export default {
   data() {
     return {
       songReady: false,
-      currentTime: 0
+      currentTime: 0,
+      currentLyric: null,
+      currentLineNum: 0
     }
   },
   mounted() {
@@ -148,6 +162,23 @@ export default {
         return item.id === this.currentSong.id
       })
       this.setCurrentIndex(index)
+    },
+    getLyric() {
+      this.currentSong.getSongLyric().then(lyric => {
+        this.currentLyric = new Lyric(lyric, this.handleLyric)
+        if (this.playing) {
+          this.currentLyric.play()
+        }
+      })
+    },
+    handleLyric({ lineNum, txt }) {
+      this.currentLineNum = lineNum
+      if (lineNum > 5) {
+        let lineEl = this.$refs.lyricLine[lineNum - 5]
+        this.$refs.lyricList.scrollToElement(lineEl, 1000)
+      } else {
+        this.$refs.lyricList.scrollToElement(0, 1000)
+      }
     },
     togglePlaying() {
       this.setPlayState(!this.playing)
@@ -283,6 +314,7 @@ export default {
       }
       this.$nextTick(() => {
         this.$refs.audio.play()
+        this.getLyric()
       })
     },
     playing(newPlaying) {
@@ -294,7 +326,8 @@ export default {
   },
   components: {
     Progressbar,
-    Progresscircle
+    Progresscircle,
+    Scroll
   }
 }
 </script>
@@ -350,7 +383,7 @@ export default {
         position: fixed
         width: 100%
         top: 1.6rem
-        bottom: 3.4rem
+        bottom: 4.05rem
         white-space: nowrap
         font-size: 0
         .middle-l
@@ -380,6 +413,23 @@ export default {
                 width: 100%
                 height: 100%
                 border-radius: 50%
+        .middle-r
+          display: inline-block
+          vertical-align: top
+          width: 100%
+          height: 100%
+          overflow: hidden
+          .lyric-wrap
+            width: 80%
+            margin: 0 auto
+            overflow: hidden
+            text-align: center
+            .text
+              line-height: 0.64rem
+              color: $color-text-l
+              font-size: $font-size-medium
+              .current
+                color: $color-text
       .bottom-wrap
         position: absolute
         bottom: 1rem

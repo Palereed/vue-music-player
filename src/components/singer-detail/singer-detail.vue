@@ -6,10 +6,10 @@
 <script type="text/ecmascript-6">
 import Musiclist from 'components/music-list/music-list'
 import { mapGetters } from 'vuex'
-import { getSingerDetail } from 'api/singer.js'
+import { getSingerDetail } from 'api/singer'
 import { creatSong } from 'common/js/song'
-import { ERR_OK } from 'api/config.js'
-import { getSongUrl } from 'api/singer'
+import { ERR_OK } from 'api/config'
+import { getSongUrl } from 'api/song'
 export default {
   data() {
     return {
