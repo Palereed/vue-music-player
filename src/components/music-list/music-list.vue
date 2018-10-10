@@ -31,7 +31,9 @@ import { prefixStyle } from 'common/js/dom'
 import { mapActions } from 'vuex'
 const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
+import { playListMinxin } from 'common/js/mixin'
 export default {
+  mixins: [playListMinxin],
   data() {
     return {
       scrollY: 0
@@ -68,6 +70,11 @@ export default {
     this.$refs.songlistwrapper.$el.style.top = `${this.avatarHeight}px`
   },
   methods: {
+    handlePlaylist(playList) {
+      const bottom = playList.length > 0 ? '1.2rem' : 0
+      this.$refs.songlistwrapper.$el.style.bottom = `${bottom}`
+      this.$refs.songlistwrapper.refresh()
+    },
     returnSinger() {
       this.$router.back()
     },
@@ -204,8 +211,8 @@ export default {
       position: absolute
       top: 0
       left: 0
+      bottom: 0
       width: 100%
-      height: 100%
     .loading-wrapper
       position: absolute
       top: 50%

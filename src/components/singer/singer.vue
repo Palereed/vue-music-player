@@ -1,6 +1,6 @@
 <template>
-  <div class="singer">
-    <listview :data="this.singers" @select="selectTo"></listview>
+  <div class="singer" ref="singer">
+    <listview :data="this.singers" @select="selectTo" ref="listview"></listview>
     <router-view></router-view>
   </div>
 </template>
@@ -14,7 +14,9 @@ import pinyin from 'js-pinyin'
 const HOT_NAME = '热门'
 const OTHER_NAME = '其他'
 const HOT_LENGTH = 10
+import { playListMinxin } from 'common/js/mixin'
 export default {
+  mixins: [playListMinxin],
   data() {
     return {
       singers: []
@@ -30,6 +32,11 @@ export default {
         path: `/singer/${singer.id}`
       })
       this.setSinger(singer)
+    },
+    handlePlaylist(playList) {
+      const bottom = playList.length > 0 ? '1.2rem' : 0
+      this.$refs.singer.style.bottom = `${bottom}`
+      this.$refs.listview.refresh()
     },
     _getSingerList() {
       getSingerList().then(res => {

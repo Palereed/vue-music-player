@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend">
+  <div class="recommend" ref="recommend">
     <scroll class="recommend-wrapper" :data="recommends" ref="scroll">
       <div>
         <div class="slider-wrapper" v-if="recommends.length">
@@ -38,7 +38,9 @@ import { ERR_OK } from 'api/config'
 import Slider from 'base/slider/slider'
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
+import { playListMinxin } from 'common/js/mixin'
 export default {
+  mixins: [playListMinxin],
   data() {
     return {
       recommends: [],
@@ -56,6 +58,11 @@ export default {
     }
   },
   methods: {
+    handlePlaylist(playList) {
+      const bottom = playList.length > 0 ? '1.2rem' : 0
+      this.$refs.recommend.style.bottom = `${bottom}`
+      this.$refs.scroll.refresh()
+    },
     _getRecommend() {
       // 这里的getRecommend是一个Promise对象
       getRecommend().then(res => {

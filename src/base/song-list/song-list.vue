@@ -32,6 +32,7 @@ export default {
 @import "~common/stylus/variable"
 @import "~common/stylus/mixin"
   .song-list
+    padding-top: 0.2rem
     .song-item
       display: flex
       align-items: center

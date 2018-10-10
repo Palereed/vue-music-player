@@ -96,6 +96,9 @@ export default {
     listenScroll(pos) {
       this.scrollY = pos.y
     },
+    refresh() {
+      this.$refs.listview.refresh()
+    },
     _calculateHeight() {
       let list = this.$refs.listGroup
       let height = 0
