@@ -1,7 +1,7 @@
 <template>
   <div class="song-list">
     <ul>
-      <li @click="selectItem(song,index)" v-for="(song,index) in songs" class="song-item">
+      <li @click="selectItem(song,index)" v-for="(song,index) in songs" class="song-item" :key="song.id">
         <div class="content">
           <h2 class="name">{{song.name}}</h2>
           <p class="desc">{{getDesc(song)}}</p>
@@ -15,7 +15,7 @@ export default {
   props: {
     songs: {
       type: Array,
-      default: []
+      default: () => []
     }
   },
   methods: {

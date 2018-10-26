@@ -11,10 +11,11 @@ import Singer from 'common/js/singer'
 import Listview from 'base/listview/listview'
 import { mapMutations } from 'vuex'
 import pinyin from 'js-pinyin'
+import { playListMinxin } from 'common/js/mixin'
 const HOT_NAME = '热门'
 const OTHER_NAME = '其他'
 const HOT_LENGTH = 10
-import { playListMinxin } from 'common/js/mixin'
+
 export default {
   mixins: [playListMinxin],
   data() {

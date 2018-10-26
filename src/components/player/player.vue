@@ -12,7 +12,7 @@
           <h1 class="song-name">{{currentSong.name}}</h1>
           <h2 class="singer-name">{{currentSong.singer}}</h2>
         </div>
-        <div class="middle-wrap" 
+        <div class="middle-wrap"
              @touchstart.prevent="middleTouchStart"
              @touchmove.prevent='middleTouchMove'
              @touchend='middleTouchEnd'
@@ -31,7 +31,7 @@
             <div class="lyric-wrap">
               <div v-if="this.currentLyric" class="text">
                 <ul>
-                  <li v-for="(line, index) in this.currentLyric.lines" :class="{'current': currentLineNum === index}" ref="lyricLine">{{line.txt}}</li>
+                  <li v-for="(line, index) in this.currentLyric.lines" :class="{'current': currentLineNum === index}" ref="lyricLine" :key="line.id">{{line.txt}}</li>
                 </ul>
               </div>
             </div>
@@ -99,7 +99,6 @@ import Progressbar from 'base/progress-bar/progress-bar'
 import Progresscircle from 'base/progress-circle/progress-circle'
 import { playMode } from 'common/js/config'
 import { shuffle } from 'common/js/util'
-import { getSongLyric } from 'common/js/song'
 import Scroll from 'base/scroll/scroll'
 import Lyric from 'lyric-parser'
 const transform = prefixStyle('transform')
@@ -184,7 +183,7 @@ export default {
     },
     togglePlaying() {
       this.setPlayState(!this.playing)
-      if(this.currentLyric) {
+      if (this.currentLyric) {
         this.currentLyric.togglePlay()
       }
     },
@@ -223,7 +222,7 @@ export default {
       if (!this.songReady) {
         return
       }
-      if (this.playList.length ===1){
+      if (this.playList.length === 1) {
         this.loop()
       } else {
         let index = this.currentIndex - 1
@@ -241,7 +240,7 @@ export default {
       if (!this.songReady) {
         return
       }
-      if (this.playList.length ===1){
+      if (this.playList.length === 1) {
         this.loop()
       } else {
         let index = this.currentIndex + 1
@@ -291,9 +290,7 @@ export default {
     leave(el, done) {
       this.$refs.cdWrap.style.transition = 'all 0.4s'
       const { x, y, scale } = this._getPosandScale()
-      this.$refs.cdWrap.style[
-        transform
-      ] = `translate3d(${x}px, ${y}px, 0) scale(${scale})`
+      this.$refs.cdWrap.style[transform] = `translate3d(${x}px, ${y}px, 0) scale(${scale})`
       this.$refs.cdWrap.addEventListener('transitionend', done)
     },
     afterLeave() {
@@ -358,9 +355,7 @@ export default {
       const left = this.currentShow === 'cd' ? 0 : -window.innerWidth
       const width = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
       this.touch.percent = Math.abs(width / window.innerWidth)
-      this.$refs.lyricList.$el.style[
-        transform
-      ] = `translate3d(${width}px, 0, 0)`
+      this.$refs.lyricList.$el.style[transform] = `translate3d(${width}px, 0, 0)`
       this.$refs.cdMiddle.style.opacity = 1 - this.touch.percent
       // 需要将动画时间，否则拖动时候会有卡顿
       this.$refs.lyricList.$el.style[transitionDuration] = '0s'
@@ -522,7 +517,7 @@ export default {
             height: 0.4rem
             line-height: 0.4rem
             font-size: $font-size-medium
-            color: $color-text-l      
+            color: $color-text-l
         .middle-r
           display: inline-block
           vertical-align: top
@@ -575,7 +570,7 @@ export default {
             &.time-r
               text-align: right
           .progress-bar-wrapper
-            flex: 1 
+            flex: 1
         .operators
           display: flex
           align-items: center

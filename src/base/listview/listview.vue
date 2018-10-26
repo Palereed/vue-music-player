@@ -1,10 +1,10 @@
 <template>
   <scroll class="listview" :data="data" :probeType="this.probeType" :isListen="this.isListen" ref="listview" @scroll="listenScroll">
     <ul>
-      <li v-for="group in data" class="list-group" ref="listGroup">
+      <li v-for="group in data" class="list-group" ref="listGroup" :key="group.id">
         <h2 class="list-group-title">{{group.title}}</h2>
         <ul>
-          <li v-for="item in group.items" class="list-item" @click="selectItem(item)">
+          <li v-for="item in group.items" class="list-item" @click="selectItem(item)" :key="item.id">
             <img v-lazy="item.avatar">
             <span class="name">{{item.name}}</span>
           </li>
@@ -14,7 +14,7 @@
     <!-- @touchmove.stop.prevent防止冒泡，防止浏览器滚动或者歌手页滚动 -->
     <div class="quick-entry" @touchstart="onQuickentryTouchStart" @touchmove.stop.prevent="onQuickentryTouchMove">
       <ul>
-        <li v-for="(item,index) in quickList" class="item" :class="{'current':currentIndex===index}" :data-index='index' ref="anchorItem">
+        <li v-for="(item,index) in quickList" class="item" :class="{'current':currentIndex===index}" :data-index='index' ref="anchorItem" :key="item.id">
           {{item}}
         </li>
       </ul>
@@ -53,7 +53,7 @@ export default {
   props: {
     data: {
       type: Array,
-      default: []
+      default: () => []
     }
   },
   computed: {

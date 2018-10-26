@@ -69,9 +69,7 @@ export default {
     },
     _offset(offsetWidth) {
       this.$refs.progress.style.width = `${offsetWidth}px`
-      this.$refs.progressBtnWrapper.style[
-        transform
-      ] = `translate3d(${offsetWidth}px, 0, 0)`
+      this.$refs.progressBtnWrapper.style[transform] = `translate3d(${offsetWidth}px, 0, 0)`
     }
   },
   watch: {

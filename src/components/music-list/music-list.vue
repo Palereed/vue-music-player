@@ -29,9 +29,9 @@ import Loading from 'base/loading/loading'
 import Songlist from 'base/song-list/song-list'
 import { prefixStyle } from 'common/js/dom'
 import { mapActions } from 'vuex'
+import { playListMinxin } from 'common/js/mixin'
 const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
-import { playListMinxin } from 'common/js/mixin'
 export default {
   mixins: [playListMinxin],
   data() {
@@ -42,7 +42,7 @@ export default {
   props: {
     songs: {
       type: Array,
-      default: []
+      default: () => []
     },
     title: {
       type: String,

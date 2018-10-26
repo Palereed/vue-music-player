@@ -2,7 +2,7 @@ import { URL } from './config'
 import axios from 'axios'
 // 获取歌曲url
 export function getSongUrl(id) {
-  let url = `${URL}/music/url`
+  let url = `${URL}/song/url`
   let data = {
     id: id,
     xhrFields: { withCredentials: true }

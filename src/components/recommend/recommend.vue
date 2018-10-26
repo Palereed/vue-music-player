@@ -4,7 +4,7 @@
       <div>
         <div class="slider-wrapper" v-if="recommends.length">
           <slider>
-            <div v-for="item in recommends">
+            <div v-for="item in recommends" :key="item.id">
               <a :href="item.linkUrl">
                 <img :src="item.picUrl" @load="loadImg">
               </a>
@@ -14,7 +14,7 @@
         <div class="songlist-wapper">
           <h1>推荐歌单</h1>
           <ul>
-            <li v-for="item in songList" class="songlist">
+            <li @click="selectItem(item)" v-for="item in songList" class="songlist" :key="item.id">
               <div class="icon">
                 <img v-lazy="item.picUrl">
               </div>
@@ -30,6 +30,7 @@
     <div class="loading-wrapper" v-show="!songList.length">
       <loading></loading>
     </div>
+    <router-view></router-view>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -39,6 +40,7 @@ import Slider from 'base/slider/slider'
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
 import { playListMinxin } from 'common/js/mixin'
+import { mapMutations } from 'vuex'
 export default {
   mixins: [playListMinxin],
   data() {
@@ -63,6 +65,13 @@ export default {
       this.$refs.recommend.style.bottom = `${bottom}`
       this.$refs.scroll.refresh()
     },
+    selectItem(item) {
+      this.$router.push({
+        path: `/recommend/${item.id}`
+      })
+      console.log(item)
+      this.setRecommDetail(item)
+    },
     _getRecommend() {
       // 这里的getRecommend是一个Promise对象
       getRecommend().then(res => {
@@ -84,7 +93,10 @@ export default {
         this.$refs.scroll.refresh()
         this.ifLoaded = true
       }
-    }
+    },
+    ...mapMutations({
+      setRecommDetail: 'SET_RECOMM_DETAIL'
+    })
   },
   components: {
     Slider,
