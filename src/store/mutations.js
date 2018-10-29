@@ -23,7 +23,7 @@ const mutations = {
     state.currentIndex = index
   },
   [types.SET_RECOMM_DETAIL](state, list) {
-    state.recommDetail = list 
+    state.recommDetail = list
   }
 }
 
