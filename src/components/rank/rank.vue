@@ -1,8 +1,8 @@
 <template>
   <div class="rank" ref="rank">
     <scroll class="toplist" ref="listview">
-      <ul>
-        <li class="item" v-for="item in rankList" :key="item.id">
+      <ul class="list-wrap">
+        <li @click="selectItem(item)" class="item" v-for="item in rankList" :key="item.id">
           <div class="icon">
             <img v-lazy="item.coverImgUrl">
           </div>
@@ -18,6 +18,7 @@
     <div class="loading-container" v-show="!rankList.length">
       <loading></loading>
     </div>
+    <router-view></router-view>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -26,6 +27,7 @@ import { ERR_OK } from 'api/config'
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
 import { playListMinxin } from 'common/js/mixin'
+import { mapMutations } from 'vuex'
 export default {
   mixins: [playListMinxin],
   data() {
@@ -41,8 +43,7 @@ export default {
       for (let i = 0; i < 24; i++) {
         getRankList(i).then(res => {
           if (res.code === ERR_OK) {
-            console.log(res.playlist)
-            this.rankList.push(res.playlist)
+            this.rankList.splice(i, 0, res.playlist)
           }
         })
       }
@@ -51,7 +52,16 @@ export default {
       const bottom = playList.length > 0 ? '1.2rem' : 0
       this.$refs.rank.style.bottom = `${bottom}`
       this.$refs.listview.refresh()
-    }
+    },
+    selectItem(item) {
+      this.$router.push({
+        path: `/rank/${item.id}`
+      })
+      this.setTopList(item)
+    },
+    ...mapMutations({
+      setTopList : 'SET_TOP_LIST'
+    })
   },
   components: {
     Scroll,
@@ -71,35 +81,36 @@ export default {
   .toplist
     height: 100%
     overflow: hidden
-    .item
-      display: flex
-      margin: 0 .4rem
-      padding-top: .4rem
-      height: 2rem
-      &:last-child
-        padding-bottom: .4rem 
-      .icon
-        flex: 2rem 0 0
-        width 2rem
-        height: 2rem
-        img
-          width: 100%
-          height: 100%
-      .songlist
-        flex: 1
+    .list-wrap
+      overflow: hidden
+      .item
         display: flex
-        flex-direction: column
-        justify-content: center
-        padding: .4rem
+        margin: .4rem .4rem 0 .4rem
         height: 2rem
-        box-sizing: border-box
-        overflow: hidden
-        background: $color-highlight-background
-        color: $color-text-d
-        font-size: $font-size-medium
-        .song
-          no-wrap()
-          line-height: .52rem
+        &:last-child
+          margin-bottom: .4rem 
+        .icon
+          flex: 2rem 0 0
+          width 2rem
+          height: 2rem
+          img
+            width: 100%
+            height: 100%
+        .songlist
+          flex: 1
+          display: flex
+          flex-direction: column
+          justify-content: center
+          padding: .4rem
+          height: 2rem
+          box-sizing: border-box
+          overflow: hidden
+          background: $color-highlight-background
+          color: $color-text-d
+          font-size: $font-size-medium
+          .song
+            no-wrap()
+            line-height: .52rem
   .loading-container
     position: absolute
     width: 100%

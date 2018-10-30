@@ -7,14 +7,14 @@ import App from './App'
 import router from './router'
 import store from './store'
 // 引入fastclick，解决移动端点击300ms延迟问题
-import fastclick from 'fastclick'
+// import fastclick from 'fastclick'
+// fastclick推荐用法
+// fastclick.attach(document.body)
 // vue懒加载插件
 import VuelazyLoad from 'vue-lazyload'
 Vue.use(VuelazyLoad, {
   loading: require('common/images/default.png')
 })
-// fastclick推荐用法
-fastclick.attach(document.body)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

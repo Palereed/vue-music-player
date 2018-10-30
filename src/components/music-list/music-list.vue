@@ -16,7 +16,7 @@
     </div>
     <div class="avatar-layer" ref="layer"></div>
     <scroll :data="songs" :probe-type="probeType" :is-listen="isListen" @scroll="scroll" class="songlist-wrapper" ref="songlistwrapper">
-      <songlist :songs="songs" @select="selectItem"></songlist>
+      <songlist :songs="songs" @select="selectItem" :rank="rank"></songlist>
     </scroll>
     <div v-show="!songs.length" class="loading-wrapper">
       <loading></loading>
@@ -51,6 +51,10 @@ export default {
     avatar: {
       type: String,
       default: ''
+    },
+    rank: {
+      type: Boolean,
+      default: false
     }
   },
   created() {

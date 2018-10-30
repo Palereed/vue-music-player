@@ -24,6 +24,9 @@ const mutations = {
   },
   [types.SET_RECOMM_DETAIL](state, list) {
     state.recommDetail = list
+  },
+  [types.SET_TOP_LIST](state, list) {
+    state.topList = list
   }
 }
 
