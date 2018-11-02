@@ -6,7 +6,6 @@
 <script type="text/ecmascript-6">
 import Musiclist from 'components/music-list/music-list'
 import { mapGetters } from 'vuex'
-import { getRecommDetail } from 'api/recommend'
 import { getSongUrl } from 'api/song'
 import { creatSong } from 'common/js/song'
 import { ERR_OK } from 'api/config'
@@ -30,7 +29,7 @@ export default {
   },
   methods: {
     _getTopList() {
-       if (!this.topList.id) {
+      if (!this.topList.id) {
         this.$router.push('/rank')
         return
       }

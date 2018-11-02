@@ -60,7 +60,7 @@ export default {
       this.setTopList(item)
     },
     ...mapMutations({
-      setTopList : 'SET_TOP_LIST'
+      setTopList: 'SET_TOP_LIST'
     })
   },
   components: {
@@ -71,7 +71,7 @@ export default {
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
 @import "~common/stylus/variable.styl"
-@import "~common/stylus/mixin.styl" 
+@import "~common/stylus/mixin.styl"
 .rank
   position: fixed
   width: 100%
@@ -88,9 +88,9 @@ export default {
         margin: .4rem .4rem 0 .4rem
         height: 2rem
         &:last-child
-          margin-bottom: .4rem 
+          margin-bottom: .4rem
         .icon
-          flex: 2rem 0 0
+          flex: 0 0 2rem
           width 2rem
           height: 2rem
           img

@@ -60,7 +60,7 @@ export default {
       padding: 0 0.6rem
       font-size: $font-size-medium
       .rank-icon
-        flex: .5rem 0 0
+        flex: 0 0 .5rem
         width: .5rem
         margin-right: .6rem
         text-align: center

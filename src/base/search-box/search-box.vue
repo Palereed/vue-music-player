@@ -1,15 +1,15 @@
 <template>
   <div class="search-box">
     <i class="icon-search"></i>
-    <input v-model="query" :placeholder="placeholder" class="box" type="text"/>
+    <input v-model="query" :placeholder="placeholder" class="box" type="text" />
     <i v-show="query" class="icon-dismiss" @click="clearQuery"></i>
   </div>
 </template>
 <script type="text/ecmascript-6">
 export default {
-  data () {
+  data() {
     return {
-      query: '11'
+      query: ''
     }
   },
   props: {
@@ -18,12 +18,19 @@ export default {
       default: '搜索推荐 歌手'
     }
   },
-  computed: {
-    
+  created() {
+    // 为何要在created调用watch，而不直接在watch()内监听？待后续讲解。
+    this.$watch('query', newQuery => {
+      this.$emit('query', newQuery)
+    })
   },
+  computed: {},
   methods: {
     clearQuery() {
       this.query = ''
+    },
+    setQuery(query) {
+      this.query = query
     }
   }
 }
