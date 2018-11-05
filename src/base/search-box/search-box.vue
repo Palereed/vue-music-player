@@ -47,19 +47,19 @@ export default {
     background: $color-highlight-background
     border-radius: .12rem
     .icon-search
-      font-size: 24px
+      font-size: .48rem
       color: $color-background
     .box
       flex: 1
       margin: 0 .1rem
       line-height: .36rem
       background: $color-highlight-background
-      color: $color-text
+      color: $color-theme
       font-size: $font-size-medium
       border: none
       &::placeholder
         color: $color-text-d
     .icon-dismiss
-      font-size: 16px
+      font-size: .32rem
       color: $color-background
 </style>

@@ -61,7 +61,7 @@ export default {
 @import "~common/stylus/mixin"
   .search
     .searchbox-wrapper
-      margin: 20px
+      margin: .4rem
     .showcontent-wrapper
       position: fixed
       top: 3.32rem
@@ -76,7 +76,7 @@ export default {
           font-size: $font-size-medium
         .item
           display: inline-block
-          padding: .1rem .2rem
+          padding: .1rem
           margin: 0 .3rem .2rem 0
           border-radius: .12rem
           background: $color-highlight-background
