@@ -22,6 +22,10 @@ export default {
     isListen: {
       type: Boolean,
       default: false
+    },
+    pullup: {
+      type: Boolean,
+      default: false
     }
   },
   mounted() {
@@ -41,6 +45,14 @@ export default {
         this.scroll.on('scroll', pos => {
           // 调用vue的$emit
           self.$emit('scroll', pos)
+        })
+      }
+      if (this.pullup) {
+        // 滑动到底部，派发scrollToEnd事件。
+        this.scroll.on('scrollEnd',() => {
+          if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {
+            this.$emit('scrollToEnd')
+          }
         })
       }
     },

@@ -1,25 +1,54 @@
 <template>
-  <div class="suggest">
-    <ul class="suggest-list">
-      <li class="suggest-item" v-for="item in suggest" :key="item.id">
-        <div class="icon">
-          <i :class="searchType[item.idx]"></i>
-          <p class="type">{{item.type}}</p>
-        </div>
+  <scroll class="suggest" @scrollToEnd="searchMore" :data="suggestSong.songs" :pullup="pullup">
+    <div class="suggest-list">
+      <div class="suggest-singer" v-show="suggestSinger.artistCount">
+        <p class="icon">
+          <i class="icon-mine"></i>
+          <span class="type">歌手</span>
+        </p>
         <ul class="type-list">
-          <li v-for="child in item.list" :key="child.id">{{child.name}}-{{singerName(child)}}</li>
+          <li @click=selectItem(singer) v-for="singer in suggestSinger.artists" :key="singer.id">
+            <i class="icon-mine"></i>
+            <span class="name">{{singer.name}}{{singerName(singer)}}</span>
+          </li>
         </ul>
-      </li>
-    </ul>
-  </div>
+      </div>
+      <div class="suggest-song" v-show="suggestSong.songCount">
+        <p class="icon">
+          <i class="icon-music"></i>
+          <span class="type">歌曲</span>
+        </p>
+        <ul class="type-list">
+          <li v-for="song in suggestSong.songs" :key="song.id">
+            <i class="icon-music"></i>
+            <span class="name">{{song.name}}{{singerName(song)}}</span>
+          </li>
+        </ul>
+        <loading v-show="hasMore" title=""></loading>
+      </div>
+    </div>
+  </scroll>
 </template>
 <script type="text/ecmascript-6">
 import { getSuggest } from 'api/search'
 import { ERR_OK } from 'api/config'
+import Scroll from 'base/scroll/scroll'
+import { creatSong } from 'common/js/song'
+import { getSongUrl } from 'api/song'
+import Loading from 'base/loading/loading'
+import Singer from 'common/js/singer'
+import { mapMutations } from 'vuex'
+const SONG_LIMIT = 20
+const SINGER_LIMIT = 5
+const OFFSET = 20
 export default {
   data() {
     return {
-      suggest: []
+      suggestSinger: [],
+      suggestSong: [],
+      pullup: true,
+      hasMore: true,
+      page: 0
     }
   },
   props: {
@@ -28,77 +57,81 @@ export default {
       default: ''
     }
   },
-  created () {
-    this.searchType = ['icon-mine','icon-music','icon-cd','icon-film','icon-playlist']
-  },
-  computed: {
-    
-  },
   methods: {
-    search() {
+    // 歌曲搜索结果
+    searchSong() {
       // 清空query时不请求
       if (!this.query) {
         return
       }
-      getSuggest(this.query).then(res => {
+      this.hasMore = true
+      getSuggest(this.query, 1, SONG_LIMIT).then(res => {
         if (res.code === ERR_OK) {
-          this.suggest = this.formatData(res.result)
-          console.log(this.suggest)
+          this.suggestSong = res.result
+          this.checkMore(this.suggestSong)
         }
       })
     },
-    formatData(data) {
-      let ret = []
-      let type = ''
-      let idx = 0
-      for (var key in data) {
-        if (key === "order") {
-          continue
-        }
-        switch (key) {
-          case 'artists': 
-            type = '歌手'
-            idx = 0
-          break;
-          case 'songs': 
-            type = '单曲'
-            idx = 1
-          break;
-          case 'albums': 
-            type = '专辑'
-            idx = 2
-          break;
-          case 'mvs': 
-            type = '视频'
-            idx = 3
-          break;
-          case 'playlists': 
-            type = '歌单'
-            idx = 4
-          break;
-        }
-        let item = {
-          key,
-          idx,
-          type,
-          list: data[key]
-        }
-        ret.splice(item.idx, 0, item)
+    searchMore() {
+      if (!this.hasMore) {
+        return
       }
-      return ret
+      this.page ++
+      getSuggest(this.query, 1, SONG_LIMIT, OFFSET * this.page).then(res => {
+        if (res.code === ERR_OK) {
+          this.suggestSong.songs = this.suggestSong.songs.concat(res.result.songs)
+          this.checkMore(this.suggestSong)
+        }
+      })
+    },
+    checkMore(data) {
+      if ((!data.songCount) || (data.songs.length + SONG_LIMIT) >= data.songCount) {
+        this.hasMore = false
+      }
+    },
+    searchSinger() {
+      if (!this.query) {
+        return
+      }
+      getSuggest(this.query, 100, SINGER_LIMIT).then(res => {
+        if (res.code === ERR_OK) {
+          this.suggestSinger = res.result
+        }
+      })
     },
     singerName(child) {
       if (child.artists) {
-        return child.artists[0].name
+        let artists = []
+        child.artists.forEach(item => {
+          artists.push(item.name)
+        })
+        return ` - ${artists.join('/')}`
       }
-      
-      //return child.artists[0].name
-    }
+    },
+    selectItem(item) {
+      const singer = new Singer({
+        id: item.id,
+        name: item.name,
+        avatar: item.picUrl
+      })
+      this.$router.push({
+        path: `/search/${singer.id}`
+      })
+      this.setSinger(singer)
+    },
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    })
   },
   watch: {
     query() {
-      this.search()
+      this.searchSong()
+      this.searchSinger()
     }
+  },
+  components: {
+    Scroll,
+    Loading
   }
 }
 </script>
@@ -110,25 +143,31 @@ export default {
     overflow: hidden
     .suggest-list
       padding: 0 .6rem
+      font-size: $font-size-medium
+      color: $color-text-d
       .icon
         display: flex
         width: 100%
-        font-size: $font-size-medium
-        color: $color-theme
         height: .6rem
         align-items: center
+        color: $color-theme
         i
           margin-right: .2rem
         .type
           flex: 1
-          font-size: $font-size-medium
       .type-list
-        font-size: $font-size-medium
-        color: $color-text-d
-        padding-left: .48rem
         li
+          display: flex
+          align-items: center;
           height: .6rem
           line-height: .6rem
+          i
+            margin-right: .2rem
+          .name
+            flex: 1
+            overflow: hidden
+            text-overflow: ellipsis;
+            white-space: nowrap;
     .no-result-wrapper
       position: absolute
       width: 100%

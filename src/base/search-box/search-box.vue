@@ -24,7 +24,6 @@ export default {
       this.$emit('query', newQuery)
     })
   },
-  computed: {},
   methods: {
     clearQuery() {
       this.query = ''

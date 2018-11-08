@@ -16,6 +16,7 @@
     <div class="search-result" v-show="query">
       <suggest :query="query"></suggest>
     </div>
+    <router-view></router-view>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -42,7 +43,7 @@ export default {
         }
       })
     },
-    addQuery(query,idx) {
+    addQuery(query, idx) {
       this.$refs.searchbox.setQuery(query)
       this.whichKey = idx
     },
@@ -106,5 +107,5 @@ export default {
       position: fixed
       width: 100%
       top: 3.32rem
-      bottom: 0
+      bottom: .4rem
 </style>
