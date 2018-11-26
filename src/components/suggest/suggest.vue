@@ -7,7 +7,7 @@
           <span class="type">歌手</span>
         </p>
         <ul class="type-list">
-          <li @click=selectItem(singer) v-for="singer in suggestSinger.artists" :key="singer.id">
+          <li @click=selectItem(singer,1) v-for="singer in suggestSinger.artists" :key="singer.id">
             <i class="icon-mine"></i>
             <span class="name">{{singer.name}}{{singerName(singer)}}</span>
           </li>
@@ -19,7 +19,7 @@
           <span class="type">歌曲</span>
         </p>
         <ul class="type-list">
-          <li v-for="song in suggestSong.songs" :key="song.id">
+          <li @click=selectItem(song) v-for="song in suggestSong.songs" :key="song.id">
             <i class="icon-music"></i>
             <span class="name">{{song.name}}{{singerName(song)}}</span>
           </li>
@@ -37,7 +37,7 @@ import { creatSong } from 'common/js/song'
 import { getSongUrl } from 'api/song'
 import Loading from 'base/loading/loading'
 import Singer from 'common/js/singer'
-import { mapMutations } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
 const SONG_LIMIT = 20
 const SINGER_LIMIT = 5
 const OFFSET = 20
@@ -108,20 +108,28 @@ export default {
         return ` - ${artists.join('/')}`
       }
     },
-    selectItem(item) {
-      const singer = new Singer({
+    selectItem(item, mark) {
+      if (mark === 1) {
+        const singer = new Singer({
         id: item.id,
         name: item.name,
         avatar: item.picUrl
-      })
-      this.$router.push({
-        path: `/search/${singer.id}`
-      })
-      this.setSinger(singer)
+        })
+        this.$router.push({
+          path: `/search/${singer.id}`
+        })
+        this.setSinger(singer)
+      } else {
+        // console.log(item)
+        this.insertSong(item)
+      }
     },
     ...mapMutations({
       setSinger: 'SET_SINGER'
-    })
+    }),
+    ...mapActions([
+      'insertSong'
+    ])
   },
   watch: {
     query() {
